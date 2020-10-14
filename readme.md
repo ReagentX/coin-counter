@@ -20,10 +20,7 @@ The matrix:
 
 has optimal path:
 
-    Grid generated in: 12.41ns
-    Solution found in: 6.01µs
     [9, 7, 9, 7, 8]
-    40 coins
 
 ## Performance
 
