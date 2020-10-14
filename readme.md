@@ -24,7 +24,7 @@ has optimal path:
 
 ## Performance
 
-For a 10000x10000 matrix, `cargo run --release` results in the following timing:
+For a 10,000x10,000 matrix, `cargo run --release` results in the following timing:
 
     Grid generated in: 644.20ms
     Solution found in: 148.04ms
