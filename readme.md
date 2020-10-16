@@ -20,7 +20,8 @@ The matrix:
 
 has optimal path:
 
-    [9, 8, 8, 7, 8]
+    Values:  [9, 8, 8, 7, 8]
+    Indexes: [6, 6, 4, 5, 6]
 
 ## Performance
 
