@@ -5,7 +5,7 @@ use std::time::Instant;
 // Given an MxN array of “boxes”, where each box contains some number of coins C[i][j],
 // you want to maximize the number of coins you can take. You take coins by traversing
 // row by row, taking all of the coins from ONE box in each row. However, any time you
-// hange the index of the box you take coins from, you must pay a “change fee” equal
+// change the index of the box you take coins from, you must pay a “change fee” equal
 // to ABS(x - y) where x and y are the previous and new row indices. Write a function
 // that can determine the optimal set of boxes to take coins from in order to maximize
 // your profit after change fees
@@ -24,14 +24,14 @@ fn main() {
     let before = Instant::now();
     let solution = find_max_coins(grid);
     println!("Solution found in: {:.2?}", before.elapsed());
-    let sum: i32 = solution.iter().fold(0, |a, &b| a as i32 + b as i32);
+    let sum: i32 = solution.iter().fold(0, |a, &b| a + b as i32);
     // println!("{:?}", solution);
     println!("{} coins", sum.to_formatted_string(&Locale::en))
 }
 
 fn find_max_coins(grid: Vec<Vec<i16>>) -> Vec<i16> {
     let mut solution: Vec<i16> = vec![];
-    let mut prev_idx = &mut 0usize;
+    let prev_idx = &mut 0usize;
 
     // Iterate through the grid
     for row in 0..grid.len() {
@@ -42,18 +42,15 @@ fn find_max_coins(grid: Vec<Vec<i16>>) -> Vec<i16> {
         if row == 0 {
             let mut best_final_index: usize = 0;
             let mut max_found: i16 = 0;
-            for possible_best_index in 0..current_row.len() {
+            (0..current_row.len()).for_each(|possible_best_index| {
                 *prev_idx = possible_best_index; // Reset after each loop because `possible_option` writes over it
-                let possible_option = prev_row_max(
-                    &grid[row + 1],
-                    current_row[possible_best_index],
-                    &mut prev_idx,
-                );
+                let possible_option =
+                    prev_row_max(&grid[row + 1], current_row[possible_best_index], prev_idx);
                 if possible_option + current_row[possible_best_index] > max_found {
                     max_found = possible_option + current_row[possible_best_index];
                     best_final_index = possible_best_index;
                 }
-            }
+            });
             *prev_idx = best_final_index;
             solution.push(current_row[best_final_index]);
             // println!("row {}: best option at index {}, target value {}", row, prev_idx, current_row[*prev_idx]);
@@ -64,17 +61,17 @@ fn find_max_coins(grid: Vec<Vec<i16>>) -> Vec<i16> {
         solution.push(prev_row_max(
             current_row,
             grid[row - 1][*prev_idx],
-            &mut prev_idx,
+            prev_idx,
         ));
     }
     solution
 }
 
-fn prev_row_max(current_row: &Vec<i16>, target: i16, prev_idx: &mut usize) -> i16 {
+fn prev_row_max(current_row: &[i16], target: i16, prev_idx: &mut usize) -> i16 {
     let mut current_max: i16 = 0;
     // Don't modify the heap value until we have a value to replace it with
     let mut local_max_idx: usize = *prev_idx;
-    for col in 0..current_row.len() {
+    (0..current_row.len()).for_each(|col| {
         // Determine value less change fee
         let value = current_row[col] + target - (*prev_idx as i16 - col as i16).abs();
         // println!("calc: {} + {} - (|{} - {}|) = {}", current_row[col], target, *prev_idx as i16, col as i16, value);
@@ -83,10 +80,10 @@ fn prev_row_max(current_row: &Vec<i16>, target: i16, prev_idx: &mut usize) -> i1
             local_max_idx = col;
             // println!("new max {} at index {}", current_max, local_max_idx)
         }
-    }
+    });
     // Copy the final value back into the borrowed variable
     *prev_idx = local_max_idx;
-    return current_row[*prev_idx];
+    current_row[*prev_idx]
 }
 
 fn generate_grid(rows: usize, cols: usize) -> Vec<Vec<i16>> {
